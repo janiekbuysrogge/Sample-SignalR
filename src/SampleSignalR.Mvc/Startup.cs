@@ -16,6 +16,7 @@ namespace SampleSignalR.Mvc
     using System.Threading.Tasks;
     using Hubs;
     using MassTransit;
+    using MassTransit.ActiveMqTransport;
     using MassTransit.SignalR;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -40,9 +41,22 @@ namespace SampleSignalR.Mvc
             {
                 x.AddSignalRHub<ChatHub>();
 
-                x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+                //x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+                //{
+                //    cfg.Host("localhost", "/");
+
+                //    cfg.UseHealthCheck(provider);
+
+                //    cfg.ConfigureEndpoints(provider);
+                //}));
+
+                x.AddBus(provider => Bus.Factory.CreateUsingActiveMq(cfg =>
                 {
-                    cfg.Host("localhost", "/");
+                    cfg.Host("localhost", 8160, h =>
+                    {
+                        h.Username("admin");
+                        h.Password("admin");
+                    });
 
                     cfg.UseHealthCheck(provider);
 
